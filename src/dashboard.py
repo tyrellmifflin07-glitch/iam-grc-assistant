@@ -5,8 +5,24 @@ import streamlit as st
 import pandas as pd
 import sys
 import os
+from dotenv import load_dotenv
 
 sys.path.append("src")
+
+# API key check on startup
+load_dotenv()
+api_key = os.getenv("ANTHROPIC_API_KEY")
+if not api_key:
+    st.error("""
+    ⚠️ ANTHROPIC_API_KEY not found.
+
+    Please create a .env file in your project root with the following:
+
+    ANTHROPIC_API_KEY=sk-ant-your-key-here
+
+    Then restart the dashboard.
+    """)
+    st.stop()
 
 from risk_engine import run_all_checks
 from executive_summary import generate_executive_summary
