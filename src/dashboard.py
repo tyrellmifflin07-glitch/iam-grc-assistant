@@ -28,6 +28,7 @@ from risk_engine import run_all_checks
 from executive_summary import generate_executive_summary
 from ai_narrator import generate_audit_narrative
 from pdf_generator import markdown_to_pdf
+from framework_mapper import generate_control_mapping_table
 
 st.set_page_config(
     page_title="AI IAM/GRC Assistant",
@@ -62,6 +63,10 @@ if uploaded_file is not None:
 
         st.subheader("Risk Findings")
         st.dataframe(findings)
+
+        st.subheader("Compliance Framework Mapping")
+        control_table = generate_control_mapping_table(findings)
+        st.markdown(control_table)
 
         with st.spinner("Generating executive summary..."):
             executive_summary = generate_executive_summary(findings)
