@@ -11,6 +11,7 @@ sys.path.append("src")
 from risk_engine import run_all_checks
 from executive_summary import generate_executive_summary
 from ai_narrator import generate_audit_narrative
+from pdf_generator import markdown_to_pdf
 
 st.set_page_config(
     page_title="AI IAM/GRC Assistant",
@@ -23,7 +24,7 @@ st.subheader("Identity Governance Risk Assessment & Audit Report Generator")
 
 st.write(
     "Upload IAM user access data to detect risks, generate an executive summary, "
-    "and create an audit-ready report."
+    "and create audit-ready Markdown and PDF reports."
 )
 
 uploaded_file = st.file_uploader("Upload IAM CSV file", type=["csv"])
@@ -33,6 +34,9 @@ if uploaded_file is not None:
 
     st.subheader("Uploaded IAM Data")
     st.dataframe(df)
+
+    os.makedirs("data", exist_ok=True)
+    os.makedirs("reports", exist_ok=True)
 
     df.to_csv("data/uploaded_users.csv", index=False)
 
@@ -55,26 +59,53 @@ if uploaded_file is not None:
         st.subheader("Audit Report")
         st.markdown(audit_report)
 
-        os.makedirs("reports", exist_ok=True)
+        executive_md_path = "reports/executive_summary.md"
+        audit_md_path = "reports/audit_report.md"
+        executive_pdf_path = "reports/executive_summary.pdf"
+        audit_pdf_path = "reports/audit_report.pdf"
 
-        with open("reports/executive_summary.md", "w") as f:
+        with open(executive_md_path, "w") as f:
             f.write(executive_summary)
 
-        with open("reports/audit_report.md", "w") as f:
+        with open(audit_md_path, "w") as f:
             f.write(audit_report)
 
-        st.success("Assessment complete. Reports saved in the reports folder.")
+        with st.spinner("Generating PDF reports..."):
+            markdown_to_pdf(executive_md_path, executive_pdf_path)
+            markdown_to_pdf(audit_md_path, audit_pdf_path)
+
+        st.success("Assessment complete. Markdown and PDF reports are ready.")
 
         st.download_button(
-            label="Download Executive Summary",
+            label="Download Executive Summary Markdown",
             data=executive_summary,
             file_name="executive_summary.md",
             mime="text/markdown"
         )
 
         st.download_button(
-            label="Download Audit Report",
+            label="Download Audit Report Markdown",
             data=audit_report,
             file_name="audit_report.md",
             mime="text/markdown"
+        )
+
+        with open(executive_pdf_path, "rb") as f:
+            executive_pdf = f.read()
+
+        with open(audit_pdf_path, "rb") as f:
+            audit_pdf = f.read()
+
+        st.download_button(
+            label="Download Executive Summary PDF",
+            data=executive_pdf,
+            file_name="executive_summary.pdf",
+            mime="application/pdf"
+        )
+
+        st.download_button(
+            label="Download Audit Report PDF",
+            data=audit_pdf,
+            file_name="audit_report.pdf",
+            mime="application/pdf"
         )
