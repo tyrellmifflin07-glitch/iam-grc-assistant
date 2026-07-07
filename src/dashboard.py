@@ -9,6 +9,12 @@ from dotenv import load_dotenv
 
 sys.path.append("src")
 
+st.set_page_config(
+    page_title="AI IAM/GRC Assistant",
+    page_icon="🔐",
+    layout="wide"
+)
+
 # API key check on startup
 load_dotenv()
 api_key = os.getenv("ANTHROPIC_API_KEY")
@@ -29,19 +35,26 @@ from executive_summary import generate_executive_summary
 from ai_narrator import generate_audit_narrative
 from pdf_generator import markdown_to_pdf
 from framework_mapper import generate_control_mapping_table
+from risk_taxonomy import add_taxonomy_columns, taxonomy_summary
 
-st.set_page_config(
-    page_title="AI IAM/GRC Assistant",
-    page_icon="🔐",
-    layout="wide"
-)
+required_columns = [
+    "user_id",
+    "username",
+    "department",
+    "role",
+    "access_level",
+    "last_login",
+    "account_status",
+    "manager",
+]
 
 st.title("🔐 AI IAM/GRC Assistant")
 st.subheader("Identity Governance Risk Assessment & Audit Report Generator")
 
 st.write(
-    "Upload IAM user access data to detect risks, generate an executive summary, "
-    "and create audit-ready Markdown and PDF reports."
+    "Upload IAM user access data to detect risks, classify findings across "
+    "enterprise risk taxonomies, map to seven compliance frameworks, and "
+    "generate audit-ready Markdown and PDF reports."
 )
 
 uploaded_file = st.file_uploader("Upload IAM CSV file", type=["csv"])
@@ -49,8 +62,21 @@ uploaded_file = st.file_uploader("Upload IAM CSV file", type=["csv"])
 if uploaded_file is not None:
     df = pd.read_csv(uploaded_file)
 
-    st.subheader("Uploaded IAM Data")
+    st.subheader("Uploaded Data Preview")
     st.dataframe(df)
+
+    missing_columns = [col for col in required_columns if col not in df.columns]
+
+    if missing_columns:
+        st.error("Invalid CSV format. This file does not match the IAM access review template.")
+        st.write("### Missing Required Columns")
+        st.write(missing_columns)
+        st.write("### Required CSV Columns")
+        st.write(required_columns)
+        st.info("Please upload an IAM access review CSV, not a property, customer, finance, or unrelated dataset.")
+        st.stop()
+
+    st.success("CSV format validated successfully.")
 
     os.makedirs("data", exist_ok=True)
     os.makedirs("reports", exist_ok=True)
@@ -62,9 +88,22 @@ if uploaded_file is not None:
             findings = run_all_checks("data/uploaded_users.csv")
 
         st.subheader("Risk Findings")
+        findings = add_taxonomy_columns(findings)
         st.dataframe(findings)
 
+        st.subheader("Enterprise Risk Taxonomy Summary")
+        st.markdown(
+            "Findings classified across **Cyber, Technology, Data, AI, and "
+            "Third-Party** risk categories — aligned to enterprise risk "
+            "management (ERM) taxonomy structures:"
+        )
+        st.dataframe(taxonomy_summary(findings))
+
         st.subheader("Compliance Framework Mapping")
+        st.markdown(
+            "Each finding mapped across **NIST 800-53, PCI-DSS, SOC 2, HIPAA, "
+            "COSO, COBIT, and DORA**:"
+        )
         control_table = generate_control_mapping_table(findings)
         st.markdown(control_table)
 

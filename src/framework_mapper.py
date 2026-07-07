@@ -1,5 +1,6 @@
 # src/framework_mapper.py
 # Purpose: Map IAM risk findings to specific compliance framework controls
+# Frameworks: NIST 800-53, PCI-DSS, SOC 2, HIPAA, COSO, COBIT, DORA
 
 FRAMEWORK_CONTROLS = {
     "Terminated user with active system record": {
@@ -18,6 +19,17 @@ FRAMEWORK_CONTROLS = {
         "HIPAA": [
             "45 CFR §164.308(a)(3)(ii)(C): Termination procedures for ePHI access",
             "45 CFR §164.312(a)(2)(i): Unique user identification and access control"
+        ],
+        "COSO": [
+            "CC Principle 10: Control activities over access removal",
+            "CC Principle 12: Deployment of policies for personnel changes"
+        ],
+        "COBIT": [
+            "DSS05.04: Manage user identity and logical access",
+            "DSS06.03: Manage roles, responsibilities, and access privileges"
+        ],
+        "DORA": [
+            "Art. 9: ICT access management — timely revocation of access rights"
         ]
     },
     "Contractor with privileged access": {
@@ -37,6 +49,18 @@ FRAMEWORK_CONTROLS = {
         "HIPAA": [
             "45 CFR §164.308(a)(3): Workforce access management",
             "45 CFR §164.308(b): Business associate access provisions"
+        ],
+        "COSO": [
+            "CC Principle 10: Control activities — segregation and least privilege",
+            "CC Principle 16: Third-party control evaluation"
+        ],
+        "COBIT": [
+            "APO10.04: Manage vendor risk and third-party access",
+            "DSS05.04: Manage user identity and logical access"
+        ],
+        "DORA": [
+            "Art. 28: ICT third-party risk management — contractor oversight",
+            "Art. 9: Privileged access controls for external parties"
         ]
     },
     "Dormant account — no login in 90+ days": {
@@ -54,6 +78,16 @@ FRAMEWORK_CONTROLS = {
         "HIPAA": [
             "45 CFR §164.308(a)(5)(ii)(C): Login monitoring",
             "45 CFR §164.312(a)(2)(i): Unique user identification"
+        ],
+        "COSO": [
+            "CC Principle 10: Ongoing control activities over access review"
+        ],
+        "COBIT": [
+            "DSS05.04: Periodic review of access rights and dormancy",
+            "MEA01.03: Monitor control effectiveness"
+        ],
+        "DORA": [
+            "Art. 9: Access rights reviewed at regular intervals"
         ]
     },
     "Privileged user with no manager assigned": {
@@ -73,6 +107,17 @@ FRAMEWORK_CONTROLS = {
         "HIPAA": [
             "45 CFR §164.308(a)(2): Assigned security responsibility",
             "45 CFR §164.308(a)(3): Workforce access management and oversight"
+        ],
+        "COSO": [
+            "CC Principle 3: Management establishes structures and reporting lines",
+            "CC Principle 10: Accountability in control activities"
+        ],
+        "COBIT": [
+            "APO01.02: Organizational structure — defined accountability",
+            "DSS06.03: Roles, responsibilities, and access privileges"
+        ],
+        "DORA": [
+            "Art. 5: ICT governance — clear roles and accountability for access"
         ]
     }
 }
@@ -88,25 +133,27 @@ def generate_control_mapping_table(findings) -> str:
     """Generate a markdown table of findings mapped to framework controls."""
     lines = []
     lines.append("## Compliance Framework Control Mapping\n")
-    lines.append("| Finding | User | Severity | NIST 800-53 | PCI-DSS | SOC 2 | HIPAA |")
-    lines.append("|---|---|---|---|---|---|---|")
+    lines.append("| Finding | User | Severity | NIST 800-53 | PCI-DSS | SOC 2 | HIPAA | COSO | COBIT | DORA |")
+    lines.append("|---|---|---|---|---|---|---|---|---|---|")
 
     for _, row in findings.iterrows():
         controls = map_finding_to_frameworks(row['risk_finding'])
 
-        nist = controls.get("NIST 800-53", ["—"])[0].split(":")[0]
-        pci = controls.get("PCI-DSS", ["—"])[0].split(":")[0]
-        soc2 = controls.get("SOC 2", ["—"])[0].split(":")[0]
-        hipaa = controls.get("HIPAA", ["—"])[0].split(":")[0]
+        def first_control(framework):
+            items = controls.get(framework, ["—"])
+            return items[0].split(":")[0] if items and items[0] != "—" else "—"
 
         lines.append(
             f"| {row['risk_finding'][:40]} "
             f"| {row['username']} "
             f"| {row['severity']} "
-            f"| {nist} "
-            f"| {pci} "
-            f"| {soc2} "
-            f"| {hipaa} |"
+            f"| {first_control('NIST 800-53')} "
+            f"| {first_control('PCI-DSS')} "
+            f"| {first_control('SOC 2')} "
+            f"| {first_control('HIPAA')} "
+            f"| {first_control('COSO')} "
+            f"| {first_control('COBIT')} "
+            f"| {first_control('DORA')} |"
         )
 
     return "\n".join(lines)
