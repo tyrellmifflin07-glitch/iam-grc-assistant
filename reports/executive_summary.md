@@ -5,15 +5,14 @@
 **Critical**
 
 ## Findings Overview
-- Total Findings: 4
-- Critical Findings: 1
-- High Findings: 1
-- Medium Findings: 2
+- Total Findings: 2502
+- Critical Findings: 500
+- High Findings: 89
+- Medium Findings: 1913
 - Low Findings: 0
 
 ## Key Business Risks
-This access review identified identity and access management risks that may expose the organization to unauthorized access, audit findings, compliance gaps, and potential misuse of sensitive systems.
-
+These findings may impact control expectations under NIST 800-53, PCI-DSS, SOC 2, HIPAA, COSO, COBIT, DORA, and general IAM governance standards.
 ## Priority Actions
 1. Immediately remediate Critical findings.
 2. Review and approve or remove High-risk privileged access.

@@ -129,14 +129,28 @@ def map_finding_to_frameworks(finding_text: str) -> dict:
             return FRAMEWORK_CONTROLS[key]
     return {}
 
+MAX_TABLE_ROWS = 50
+
 def generate_control_mapping_table(findings) -> str:
-    """Generate a markdown table of findings mapped to framework controls."""
+    """Generate a markdown table of findings mapped to framework controls.
+    Capped at MAX_TABLE_ROWS highest-severity rows for UI performance at scale."""
+    severity_order = {"Critical": 0, "High": 1, "Medium": 2, "Low": 3}
+    df = findings.copy()
+    df["_sev_rank"] = df["severity"].map(severity_order).fillna(4)
+    df = df.sort_values("_sev_rank")
+
+    total = len(df)
+    display_df = df.head(MAX_TABLE_ROWS)
+
     lines = []
     lines.append("## Compliance Framework Control Mapping\n")
+    if total > MAX_TABLE_ROWS:
+        lines.append(f"*Showing the {MAX_TABLE_ROWS} highest-severity findings of {total:,} total. "
+                     f"Full mapping available in the exported audit report.*\n")
     lines.append("| Finding | User | Severity | NIST 800-53 | PCI-DSS | SOC 2 | HIPAA | COSO | COBIT | DORA |")
     lines.append("|---|---|---|---|---|---|---|---|---|---|")
 
-    for _, row in findings.iterrows():
+    for _, row in display_df.iterrows():
         controls = map_finding_to_frameworks(row['risk_finding'])
 
         def first_control(framework):

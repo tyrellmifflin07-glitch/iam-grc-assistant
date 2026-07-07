@@ -1,139 +1,129 @@
-# IAM Access Risk Audit Report
-**Prepared by:** Senior IAM & GRC Security Auditor
-**Classification:** Confidential – Internal Use Only
-**Review Scope:** Automated Access Review – Identity & Access Management Controls
-**Applicable Industries:** Financial Services / Healthcare
+# Identity & Access Management Access Review
+# Audit Report — Confidential
+
+**Report Classification:** Confidential — For Authorized Recipients Only
+**Review Type:** Automated Access Review — Full Population Analysis
+**Total Population Reviewed:** 2,502 findings across all business units
+**Report Status:** Final
+**Distribution:** Board Audit Committee | Chief Information Security Officer | Chief Risk Officer | Chief Compliance Officer
 
 ---
 
 ## Executive Summary
 
-The following findings were identified during an automated access review of user accounts and entitlements across in-scope systems. Four (4) access risk exceptions were detected, comprising one (1) Critical, one (1) High, and two (2) Medium severity findings. Each finding represents a control deficiency with potential exposure to unauthorized access, regulatory non-compliance, and reputational risk. Immediate remediation is recommended for Critical and High findings. Medium findings should be addressed within the organization's standard remediation SLA for access governance.
+This report presents the findings of an enterprise-wide automated access review encompassing **2,502 individual findings** across all organizational departments. The volume, severity distribution, and nature of these findings collectively indicate a **high-risk identity and access management (IAM) posture** requiring immediate executive attention and structured remediation at both the individual account and program levels.
+
+Of the 2,502 total findings, **500 are rated Critical (20%), 89 are rated High (3.6%), and 1,913 are rated Medium (76.4%)**. The presence of 500 Critical-severity findings — each representing a terminated user with an active system record — is the single most consequential outcome of this review. These accounts represent former employees or contractors whose system access was not revoked upon separation, creating conditions for unauthorized access, insider threat exploitation, credential abuse, and regulatory non-compliance. In a regulated environment such as banking or healthcare, each unrevoked terminated-user account constitutes an independent control failure with potential regulatory, legal, and financial exposure.
+
+The remaining 1,913 Medium-severity findings reflect dormant accounts with no login activity in 90 or more days. While individually rated lower in severity, the aggregate volume of dormant accounts across every department in the organization signals a systemic absence of access hygiene controls and lifecycle management processes.
+
+The 89 High-severity findings — comprising contractors with privileged access and privileged users with no assigned manager — represent elevated risk due to the combination of elevated permissions and reduced supervisory oversight.
+
+**No department is unaffected.** Findings span Finance, Legal, Audit, IT, HR, Engineering, Operations, Treasury, Marketing, Sales, Compliance, and Executive leadership functions. The concentration of findings in Finance (224), Legal (223), and Audit (219) is particularly significant, as these departments handle the organization's most sensitive financial, legal, and oversight data. The presence of Critical findings within the Executive department — including accounts attributed to roles such as Manager, Developer, and Analyst — warrants heightened scrutiny.
+
+The overall risk posture of this organization's IAM program is assessed as **materially deficient**. The findings are not isolated anomalies; they represent the output of systemic process failures in joiner-mover-leaver (JML) workflows, access certification, privileged access governance, and account lifecycle management. Remediation must be pursued urgently at the individual account level and structurally at the program level.
 
 ---
 
-## Detailed Findings
+## Thematic Risk Analysis
+
+### 2.1 Dominant Finding Type: Terminated Users with Active System Records (Critical — 500 findings)
+
+The single largest Critical-severity finding category — terminated users retaining active system records — accounts for **100% of all Critical findings** and represents **20% of the total finding population**. This concentration is not a data anomaly; it is evidence of a broken or absent offboarding control.
+
+In a mature IAM environment, user account deprovisioning is triggered automatically upon HR system termination events, with accounts disabled within hours and formally deprovisioned within a defined window (typically 24–72 hours per industry standards). The existence of 500 such accounts across every department in the organization suggests that no reliable automated linkage exists between the HR system of record and the identity governance platform. Provisioning and deprovisioning appear to be manual, ad hoc, or insufficiently monitored.
+
+The risk posed by these accounts is not theoretical. Terminated users may retain knowledge of credentials, and their accounts — if not disabled — represent exploitable entry points for unauthorized access, whether by the former user, a malicious external actor who has obtained credentials, or an internal party leveraging the account for privilege escalation or data exfiltration. In regulated industries, these accounts also create direct audit findings under separation-of-duties and access control requirements across multiple frameworks.
+
+Of particular concern are the **six terminated accounts identified with Privileged access levels**: `jwilson6416`, `tjohnson6257`, `jlopez6103`, `jwilson7263`, `rsingh7058`, `pnguyen7030`, and `ajohnson6835`. Privileged accounts belonging to terminated users represent an exponentially higher risk, as these accounts may have administrative, SysAdmin, or elevated system rights that could facilitate widespread unauthorized activity.
+
+Additionally, several terminated accounts carry sensitive organizational roles — including Director, VP, SysAdmin, and Manager — within departments such as IT, Legal, Treasury, Engineering, and Executive functions. The combination of seniority, likely broad access scope, and unrevoked status compounds the risk profile of these specific accounts.
+
+### 2.2 Secondary Finding Type: Dormant Accounts (Medium — 1,913 findings)
+
+Dormant accounts — those with no recorded login activity in 90 or more days — constitute **76.4% of all findings** and represent the largest finding category by volume. While each is individually rated Medium severity, the aggregate pattern indicates an organization-wide absence of access recertification controls.
+
+Dormant accounts are a persistent and well-documented attack surface. Unused credentials are less likely to be monitored for anomalous activity, are frequently excluded from password rotation policies, and may retain access rights that have become excessive relative to the user's current role. In environments where role drift or internal transfers occur without corresponding access updates, dormant accounts may hold legacy permissions that no longer reflect the principle of least privilege.
+
+The distribution of dormant accounts across all departments — with no organizational unit below 191 findings — confirms that this is not a departmental failure but an enterprise-level control gap. The absence of an automated dormancy detection and response process is the root cause. In a mature program, accounts inactive beyond a defined threshold (typically 30–90 days depending on regulatory environment) are automatically flagged, reviewed, and either recertified or disabled.
+
+### 2.3 High-Severity Findings: Privileged Access Without Adequate Oversight (High — 89 findings)
+
+The 89 High-severity findings break into two sub-categories: **contractors with privileged access (70 findings)** and **privileged users with no manager assigned (19 findings)**.
+
+Contractors with privileged access represent a well-established control failure pattern. Third-party personnel, by their nature, operate outside the organization's standard HR lifecycle controls, yet these 70 individuals have been granted elevated system permissions. Contractor access should, as a baseline control, be time-limited, scoped to minimum necessary permissions, and subject to enhanced review cycles. The presence of 70 contractors with privileged access — absent evidence of compensating controls — suggests that privileged access provisioning processes do not adequately distinguish between permanent staff and third-party personnel.
+
+The 19 privileged users with no manager assigned represent a governance gap in supervisory oversight. Manager assignment is a foundational requirement for access recertification workflows: without a designated manager, these accounts cannot be subjected to periodic review, approval, or challenge. This creates a structural blind spot in the access certification process, as these accounts may be perpetually excluded from recertification cycles due to an unresolvable workflow dependency.
+
+### 2.4 Departmental Risk Concentration
+
+The top five departments by finding count — Finance (224), Legal (223), Audit (219), IT (218), and HR (216) — are precisely the departments that handle the organization's most sensitive and regulated data categories. This concentration warrants specific commentary:
+
+- **Finance and Treasury (432 combined findings):** These departments handle financial reporting, payment processing, and treasury operations. Unauthorized or unreviewed access in these areas creates direct exposure to financial fraud, insider threat, and regulatory violations under SOX, PCI-DSS, and applicable banking regulations. The presence of terminated Finance analysts and a Treasury SysAdmin with active records is particularly acute.
+
+- **Legal (223 findings):** Legal department systems typically contain privileged communications, litigation strategy, regulatory correspondence, and M&A-sensitive information. Unrevoked access to former Legal personnel — including a terminated Director — poses significant attorney-client privilege and data confidentiality risks.
+
+- **Audit (219 findings):** The concentration of findings within the Audit department itself is an independence and integrity concern. An organization's internal audit function should model exemplary access hygiene. Findings within this department undermine the credibility of internal oversight functions and should be escalated to the Audit Committee directly.
+
+- **IT (218 findings):** IT department accounts frequently carry broader system access than business users. Three terminated IT analysts and a Developer with active records, combined with dormant IT accounts, represent a significant technical risk vector.
+
+- **HR (216 findings):** HR systems contain personally identifiable information (PII), compensation data, disciplinary records, and — critically — the very offboarding records that should trigger access deprovisioning. Access control failures in HR create a recursive risk: if HR system access is not properly governed, the integrity of the offboarding process itself may be compromised.
+
+### 2.5 Severity Distribution and Control Maturity Assessment
+
+The severity distribution of findings — heavily weighted toward Critical and Medium, with a comparatively small High population — is diagnostically informative. The near-absence of a proportional High-severity finding population relative to Critical and Medium suggests that the organization's access review has surfaced two distinct failure modes operating simultaneously: acute failures (terminated users, Critical) and chronic failures (dormant accounts, Medium). The smaller High population reflects point-in-time governance gaps rather than systemic process failures of equivalent scale.
+
+From a control maturity perspective, the aggregate findings are consistent with a **Level 1–2 (Initial/Developing) IAM maturity profile** on standard capability models. Controls exist in concept but are not systematically enforced, automated, or consistently applied across the enterprise. Remediation at this scale requires not only account-level action but a fundamental uplift of IAM program infrastructure.
 
 ---
 
-### FINDING: [CRITICAL] — mgarcia
+## Priority Findings Detail
 
-**RISK:**
-User account `mgarcia`, affiliated with the Finance department in an Analyst role, remains active within the system despite the user's employment having been terminated. This represents a direct failure in the organization's joiner-mover-leaver (JML) process, specifically the offboarding lifecycle control. Active accounts belonging to terminated individuals pose one of the most severe identity-related risks, as these credentials may be exploited by the former employee, leveraged in credential stuffing attacks, or used by malicious insiders who retain knowledge of the account. The absence of timely deprovisioning indicates a breakdown in the coordination between Human Resources, IT, and system administrators, and suggests that automated offboarding workflows either do not exist or are not functioning as intended.
-
-**IMPACT:**
-From a business perspective, this finding exposes the organization to unauthorized access to sensitive financial data, potential fraud, and intellectual property theft. In a banking or healthcare environment, Finance department access typically encompasses general ledger systems, payment processing platforms, and financial reporting tools — all of which carry significant data sensitivity. From a compliance standpoint, failure to promptly revoke access for terminated users constitutes a direct violation of access management requirements under multiple regulatory frameworks. This finding would likely result in an audit exception or finding in a SOC 2 Type II examination and could trigger regulatory scrutiny under PCI-DSS and HIPAA audit cycles. Depending on jurisdictional requirements, prolonged retention of active terminated accounts may also implicate data privacy obligations under applicable law.
-
-**REMEDIATION:**
-1. **Immediate (Within 24 Hours):** Disable and lock the `mgarcia` account across all in-scope systems. Do not delete the account pending forensic review.
-2. **Short-Term (Within 72 Hours):** Conduct a forensic access log review to determine whether the account has been accessed since the date of termination. Document findings and escalate to the Security Operations Center (SOC) if any post-termination access activity is identified.
-3. **Process Remediation (Within 30 Days):** Audit the end-to-end offboarding workflow to identify the specific control failure that permitted the account to remain active. Implement automated deprovisioning triggers that are initiated upon HR system termination events, with a target SLA of account suspension within one (1) business day of termination.
-4. **Governance:** Introduce a weekly reconciliation report comparing HR termination records against active directory and system accounts to serve as a compensating detective control.
-
-**FRAMEWORKS:**
-| Framework | Control Reference | Requirement |
-|---|---|---|
-| NIST 800-53 Rev. 5 | AC-2(f), AC-2(3) | Account management; disable accounts upon termination |
-| PCI-DSS v4.0 | Requirement 7.3.3, 8.3.5 | Remove or disable inactive/terminated user accounts promptly |
-| SOC 2 (Trust Services Criteria) | CC6.2, CC6.3 | Logical access provisioning and deprovisioning controls |
-| HIPAA Security Rule | 45 CFR §164.308(a)(3)(ii)(C) | Termination procedures; revoke access upon workforce member departure |
+The following 50 findings represent the highest-priority subset of the total finding population, selected for individual analysis based on severity rating and risk profile. All are rated Critical. Findings involving Privileged access level accounts are noted and should be treated as the highest priority subset within this section.
 
 ---
 
-### FINDING: [HIGH] — rlee
-
-**RISK:**
-User `rlee`, classified as a Contractor within the Finance department, has been granted Privileged access to in-scope systems. Privileged access — defined as access rights that extend beyond standard user entitlements and may include administrative functions, elevated data permissions, or the ability to modify system configurations — should be tightly controlled and granted only where there is a clearly documented and approved business justification. The assignment of privileged access to a contractor represents a significant violation of the principle of least privilege (PoLP) and separation of duties. Contractors, by nature of their transient engagement, variable oversight, and typically less stringent vetting processes compared to full-time employees, represent an elevated risk vector when granted elevated system access. This finding suggests that either the role provisioning process lacks sufficient compensating controls for non-employee access, or that access entitlements were not properly reviewed upon or after onboarding.
-
-**IMPACT:**
-Privileged access within a Finance department system in a banking or healthcare organization can provide a contractor with the ability to access, modify, or exfiltrate sensitive financial records, payment data, or protected health information (PHI). The business risk includes potential fraud, data manipulation, and unauthorized data disclosure. From a compliance perspective, granting contractor accounts privileged access without documented justification, formal approval, enhanced monitoring, and periodic recertification represents a direct deficiency against access control standards. This finding would likely be flagged as a significant exception during a PCI-DSS assessment, particularly given the Finance department's probable proximity to cardholder data environments (CDE). It also undermines the organization's ability to demonstrate effective access governance under SOC 2 criteria.
-
-**REMEDIATION:**
-1. **Immediate (Within 48 Hours):** Initiate an emergency access review for `rlee` to validate whether privileged access was intentionally provisioned and whether a current, approved business justification exists.
-2. **Short-Term:** If no valid justification exists or approval cannot be confirmed, downgrade `rlee`'s access level to Standard, consistent with the organization's baseline contractor access policy, and document the remediation action.
-3. **If Justification Exists:** Ensure formal written approval from a system owner and data owner is on file, that the access is time-bound to the contract duration, and that enhanced monitoring and session logging are enabled for the account.
-4. **Process Remediation (Within 30 Days):** Establish or reinforce a policy prohibiting the provisioning of privileged access to contractors without documented risk acceptance, multi-level approval, and quarterly recertification. Implement preventive controls in the provisioning workflow to flag contractor accounts requesting privileged roles for mandatory approval escalation.
-5. **Monitoring:** Enable privileged access session monitoring and alerting for `rlee` retroactively, pending access review completion.
-
-**FRAMEWORKS:**
-| Framework | Control Reference | Requirement |
-|---|---|---|
-| NIST 800-53 Rev. 5 | AC-2, AC-6, AC-6(5) | Least privilege; privileged accounts — restrictions on access |
-| PCI-DSS v4.0 | Requirement 7.2.2, 8.2.2 | Access assignment aligned to job function; restrict privileged access |
-| SOC 2 (Trust Services Criteria) | CC6.3, CC6.6 | Logical access restrictions; third-party and contractor access controls |
-| HIPAA Security Rule | 45 CFR §164.308(a)(3), §164.308(a)(4) | Workforce access management; information access management |
+**FINDING: [Critical] — randerson13**
+**Department:** Legal | **Role:** Manager | **Access Level:** Standard
+**RISK:** A terminated Legal Manager retains an active system record, providing a potential unauthorized access path into legal department systems containing privileged communications, litigation materials, and regulatory correspondence. Former managers frequently hold broad access permissions commensurate with supervisory functions, amplifying the scope of potential exposure. This finding may also constitute a violation of data protection and access control requirements applicable to legal information governance.
+**REMEDIATION:** Immediately disable the account and revoke all associated access tokens, sessions, and credentials within 24 hours. Conduct a post-termination access log review covering the 90 days prior to and following the identified termination date to detect any unauthorized access activity. Formally decommission the account within 5 business days following initial disable action.
+**FRAMEWORKS:** NIST 800-53: AC-2(3), AC-2(4), PS-4 | PCI-DSS: Requirement 7.3.1, 8.2.6 | SOC 2: CC6.2, CC6.3 | HIPAA: §164.312(a)(2)(i) | COSO: Control Environment, Control Activities | COBIT: DSS05.04, APO01.03 | DORA: Art. 9 ICT Access Controls
 
 ---
 
-### FINDING: [MEDIUM] — tjones
-
-**RISK:**
-User `tjones`, a Manager within the HR department, has not logged into their account for a period exceeding ninety (90) days, meeting the organization's threshold for classification as a dormant or inactive account. Dormant accounts represent an exploitable attack surface, as they are frequently overlooked during routine access reviews and may not be subject to the same level of monitoring as actively used accounts. An unused account that retains valid credentials and active entitlements can be leveraged by an external threat actor following credential compromise, or by an internal actor seeking to operate under a less scrutinized identity. The HR department context amplifies this risk, as HR systems typically contain sensitive employee personally identifiable information (PII), compensation data, performance records, and in healthcare environments, may interface with systems containing workforce health information.
-
-**IMPACT:**
-The continued existence of dormant accounts without review or remediation reflects a deficiency in the organization's periodic access recertification program. From a business perspective, an HR Manager-level account carries entitlements that may include access to sensitive personnel records and HR management system functions. Unauthorized access to such data could result in regulatory penalties under applicable privacy laws, workforce disruption, and reputational harm. From a compliance standpoint, this finding indicates that the organization's access recertification controls may not be operating effectively to identify and address stale entitlements in a timely manner, which is a commonly tested area in SOC 2 Type II audits and NIST-aligned security assessments.
-
-**REMEDIATION:**
-1. **Short-Term (Within 5 Business Days):** Contact the account owner (`tjones`) and their direct supervisor to confirm whether the account is still required and whether the inactivity is legitimate (e.g., extended leave).
-2. **If Account Is Required:** Reactivate with a mandatory password reset and enforce multi-factor authentication (MFA) at next login. Document the business justification for retention.
-3. **If Account Is No Longer Required:** Disable and deprovision the account promptly, following the organization's standard offboarding or access removal procedures.
-4. **Process Remediation:** Ensure dormant account detection is incorporated into the quarterly access recertification cycle. Implement automated controls to disable accounts that have not been accessed within a defined threshold (recommended: 60–90 days) pending manager review.
-
-**FRAMEWORKS:**
-| Framework | Control Reference | Requirement |
-|---|---|---|
-| NIST 800-53 Rev. 5 | AC-2(3), IA-4(e) | Disable inactive accounts; identifier management |
-| PCI-DSS v4.0 | Requirement 8.2.6 | Remove or disable inactive user accounts within 90 days |
-| SOC 2 (Trust Services Criteria) | CC6.2, CC6.3 | Access provisioning and periodic recertification controls |
-| HIPAA Security Rule | 45 CFR §164.308(a)(5)(ii)(C) | Log-in monitoring; review of access activity |
+**FINDING: [Critical] — jsmith6492**
+**Department:** Finance | **Role:** Manager | **Access Level:** Standard
+**RISK:** A terminated Finance Manager holds an active system record, creating unauthorized access exposure to financial systems, reporting tools, and potentially sensitive budget or forecasting data. Managerial roles in Finance typically carry approval rights and elevated data access that extend beyond individual contributor permissions. In a regulated banking or financial services environment, this represents a direct control failure under financial data access governance requirements.
+**REMEDIATION:** Disable account and revoke all associated credentials and session tokens within 24 hours. Perform a retrospective access log review to determine whether any system activity occurred following the recorded termination date. Complete full account deprovisioning within 5 business days and document remediation actions in the access review log.
+**FRAMEWORKS:** NIST 800-53: AC-2(3), PS-4, AU-2 | PCI-DSS: Requirement 8.2.6, 7.3.1 | SOC 2: CC6.2, CC6.3 | HIPAA: §164.312(a)(2)(i) | COSO: Control Activities, Risk Assessment | COBIT: DSS05.04, MEA02.01 | DORA: Art. 9
 
 ---
 
-### FINDING: [MEDIUM] — hkim
-
-**RISK:**
-User `hkim`, a Contractor within the Finance department with Standard-level access, has not authenticated to their account for a period exceeding ninety (90) days, qualifying this account as dormant under the organization's access governance policy. This finding is particularly noteworthy given the dual risk factors associated with this account: the user is an external contractor (non-employee) and the account resides within the Finance department. Contractor accounts are inherently time-limited in nature and should be tied directly to active engagement periods. An inactive contractor account suggests either that the engagement has concluded without triggering a formal offboarding action, or that the contractor's access was provisioned without a defined expiration date. Either scenario reflects a gap in the contractor access lifecycle management process.
-
-**IMPACT:**
-Dormant contractor accounts in the Finance department expose the organization to unauthorized access to financial systems and sensitive data by individuals who may no longer have a current business need or active contractual relationship with the organization. Unlike full-time employee dormancy, which may be attributable to leave or role transition, contractor inactivity over 90 days strongly implies that the engagement may have lapsed. Retaining active credentials for potentially off-boarded contractors is a direct compliance gap, particularly under PCI-DSS, which mandates timely removal of inactive accounts and requires that third-party access be managed with documented controls. This finding may also suggest that contractor access agreements lack enforceable expiration and review provisions.
-
-**REMEDIATION:**
-1. **Short-Term (Within 5 Business Days):** Verify with the Finance department and Procurement/Vendor Management whether `hkim`'s contract is currently active. Cross-reference the contractor's system access provisioning date against contract start and end dates.
-2. **If Contract Is Active:** Confirm current business need, require re-authentication with mandatory password reset and MFA enforcement, and establish a formal access expiration date aligned with the contract end date.
-3. **If Contract Has Expired or Is Inactive:** Immediately disable and deprovision the `hkim` account. Conduct a review of access logs from the period of inactivity to confirm no unauthorized usage occurred.
-4. **Process Remediation (Within 30 Days):** Implement a contractor access governance policy requiring all contractor accounts to be provisioned with a hard expiration date that does not exceed the contract end date. Establish automated workflows to disable contractor accounts at contract expiry and trigger notification to system owners for review if activity ceases for 30 or more days.
-
-**FRAMEWORKS:**
-| Framework | Control Reference | Requirement |
-|---|---|---|
-| NIST 800-53 Rev. 5 | AC-2(2), AC-2(3), PS-7 | Non-organizational users; account inactivity; third-party personnel security |
-| PCI-DSS v4.0 | Requirement 8.2.6, 8.6.1 | Disable inactive accounts; manage third-party/vendor access |
-| SOC 2 (Trust Services Criteria) | CC6.2, CC6.3, CC9.2 | Access controls; vendor and third-party management |
-| HIPAA Security Rule | 45 CFR §164.308(a)(3)(ii)(C), §164.308(b) | Access termination; business associate and contractor oversight |
+**FINDING: [Critical] — mnguyen6489**
+**Department:** Compliance | **Role:** Specialist | **Access Level:** Standard
+**RISK:** A terminated Compliance Specialist retains an active system record, presenting unauthorized access risk to compliance monitoring systems, regulatory reporting tools, and audit-sensitive data. Compliance personnel routinely access information pertaining to regulatory filings, internal investigations, and control testing — categories of information that carry significant confidentiality obligations. Unauthorized retention of this access post-termination also creates a meta-compliance risk: a compliance function with demonstrable access control failures is materially weakened in its regulatory standing.
+**REMEDIATION:** Disable account within 24 hours. Review system access logs for any post-termination activity and escalate findings to the Chief Compliance Officer if activity is detected. Complete full deprovisioning within 5 business days and notify relevant regulators if post-termination data access is confirmed.
+**FRAMEWORKS:** NIST 800-53: AC-2(3), PS-4, IR-6 | PCI-DSS: Requirement 8.2.6 | SOC 2: CC6.2, CC6.3, CC7.2 | HIPAA: §164.312(a)(2)(i), §164.308(a)(1) | COSO: Monitoring Activities | COBIT: DSS05.04, APO13.01 | DORA: Art. 9
 
 ---
 
-## Summary Risk Register
-
-| Finding | User | Severity | Department | Status | Recommended Action |
-|---|---|---|---|---|---|
-| Terminated user — active record | mgarcia | 🔴 Critical | Finance | Open | Immediate account disable + forensic review |
-| Contractor with privileged access | rlee | 🟠 High | Finance | Open | Emergency access review + privilege reduction |
-| Dormant account (90+ days) | tjones | 🟡 Medium | HR | Open | Confirm status + disable or recertify |
-| Dormant contractor account (90+ days) | hkim | 🟡 Medium | Finance | Open | Confirm contract status + disable or recertify |
+**FINDING: [Critical] — wmiller6481**
+**Department:** Operations | **Role:** Developer | **Access Level:** Standard
+**RISK:** A terminated Operations Developer retains an active system record, posing a risk of unauthorized access to operational systems, application codebases, or deployment pipelines. Developer access frequently includes the ability to read, modify, or deploy system components, creating potential for data exfiltration, code tampering, or introduction of malicious logic if exploited. Operations systems may also interface with production environments, amplifying the potential impact.
+**REMEDIATION:** Disable account and revoke all code repository, deployment tool, and API access within 24 hours. Review version control and deployment logs for anomalous activity attributable to this account post-termination. Complete full deprovisioning within 5 business days.
+**FRAMEWORKS:** NIST 800-53: AC-2(3), CM-5, PS-4 | PCI-DSS: Requirement 8.2.6, 6.3.3 | SOC 2: CC6.2, CC8.1 | HIPAA: §164.312(a)(2)(i) | COSO: Control Activities | COBIT: DSS05.04, BAI06.01 | DORA: Art. 9
 
 ---
 
-## Auditor Recommendations — Systemic Controls
-
-Beyond individual finding remediation, the auditor recommends the following systemic improvements to reduce recurring IAM access risk exposure:
-
-1. **Implement an Automated JML Workflow:** Integrate HR systems with identity governance platforms to trigger real-time provisioning, modification, and deprovisioning actions based on workforce lifecycle events.
-2. **Enforce Contractor Access Expiration Policies:** All non-employee accounts should carry a mandatory hard expiration date at provisioning, with no exceptions without documented and approved business justification.
-3. **Establish Quarterly Access Recertification:** Formalize a recertification program requiring system owners and managers to review and certify all user entitlements on a minimum quarterly basis.
-4. **Privileged Access Management (PAM):** Deploy a PAM solution to govern, monitor, and record all privileged access sessions, with role-based approval workflows preventing contractor accounts from receiving privileged entitlements without escalated authorization.
-5. **Dormant Account Automation:** Configure identity governance tooling to automatically flag and suspend accounts exceeding the organization's defined inactivity threshold, with notification to system owners for prompt review.
+**FINDING: [Critical] — jtaylor6466**
+**Department:** Marketing | **Role:** Coordinator | **Access Level:** Standard
+**RISK:** A terminated Marketing Coordinator retains an active system record, exposing marketing platforms, customer data repositories, and campaign management tools to potential unauthorized access. Marketing systems frequently contain customer PII, consent records, and segmentation data subject to privacy regulations including GDPR and CCPA. Unrevoked access by a former employee in this context creates both a security and privacy compliance exposure.
+**REMEDIATION:** Disable account within 24 hours. Review access logs for any post-termination activity involving customer data or marketing platforms. Complete full deprovisioning within 5 business days and notify the Privacy Officer if customer PII access is confirmed post-termination.
+**FRAMEWORKS:** NIST 800-53: AC-2(3), PS-4, PT-2 | PCI-DSS: Requirement 8.2.6 | SOC 2: CC6.2, CC6.3 | HIPAA: §164.312(a)(2)(i) | COSO: Control Activities | COBIT: DSS05.04, APO01.03 | DORA: Art. 9
 
 ---
 
-*This report contains confidential audit findings intended solely for the use of the organization's management, IT security team, and applicable compliance stakeholders. Findings should be tracked to closure in the organization's GRC platform with assigned owners and target remediation dates.*
+**FINDING: [Critical] — lgonzalez6435**
+**Department:** Operations | **Role:** Analyst | **Access Level:** Standard
+**RISK:** A terminated Operations Analyst retains an active system record, creating unauthorized access exposure to operational data, process management systems, and potentially production monitoring tools. Analyst access in operations environments may include read access to transaction logs, operational metrics, and system configurations that could be leveraged for reconnaissance or competitive intelligence. This finding represents a failure of the offboarding workflow specific to the Operations department.
+**REMEDIATION:** Disable account within 24 hours. Review
