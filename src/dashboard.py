@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 sys.path.append("src")
 
 st.set_page_config(
-    page_title="AI IAM/GRC Assistant",
+    page_title="MiffTech · AI IAM/GRC Assistant",
     page_icon="🔐",
     layout="wide"
 )
@@ -49,8 +49,54 @@ required_columns = [
     "manager",
 ]
 
-st.title("🔐 AI IAM/GRC Assistant")
-st.subheader("Identity Governance Risk Assessment & AI Adoption Risk Advisory")
+# ── MIFFTECH BRANDING ──
+import os as _os
+_logo_path = "assets/logo.png"
+
+st.markdown("""
+<style>
+    /* MiffTech brand styling */
+    .mifftech-header {
+        background-color: #2B2F33;
+        padding: 1.2rem 1.5rem;
+        border-radius: 10px;
+        border-bottom: 3px solid #E8B830;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+    }
+    h1, h2, h3 {
+        color: #1B3A5C;
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        border-bottom: 2px solid #3D8BD4;
+    }
+    .stTabs [aria-selected="true"] {
+        color: #3D8BD4 !important;
+        font-weight: 700;
+    }
+    [data-testid="stMetricValue"] {
+        color: #3D8BD4;
+    }
+    .mifftech-footer {
+        margin-top: 3rem;
+        padding-top: 1rem;
+        border-top: 2px solid #E8B830;
+        color: #666;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+_hcol1, _hcol2 = st.columns([1, 5])
+with _hcol1:
+    if _os.path.exists(_logo_path):
+        st.image(_logo_path, width=220)
+with _hcol2:
+    st.title("AI IAM/GRC Assistant")
+    st.markdown("**Identity Governance Risk Assessment & AI Adoption Risk Advisory**")
+    st.caption("MiffTech Risk AI & Consulting · Second-Line Risk Intelligence Platform")
 
 tab_iam, tab_ai, tab_gov, tab_aigov = st.tabs(["🪪 IAM Risk Assessment", "🤖 AI Adoption Risk Advisor", "🏛️ Risk Governance", "🧠 AI Governance"])
 
@@ -450,3 +496,15 @@ with tab_aigov:
     DORA Art. 28 (third-party AI services) · GDPR Art. 22 (automated
     decision-making) · Model Risk Management guidance (SR 11-7 principles)
     """)
+
+
+# ── MIFFTECH FOOTER ──
+st.markdown("""
+<div class="mifftech-footer">
+    <strong>MiffTech Risk AI & Consulting</strong> · Tyrell Mifflin, CEH · CSM · CCSP (Expected 2026)<br>
+    IAM Governance · GRC Engineering · AI Risk Advisory · New Castle, DE<br>
+    <a href="https://iam-grc-assistant.streamlit.app">Live Platform</a> ·
+    <a href="https://github.com/tyrellmifflin07-glitch">GitHub</a> ·
+    <a href="https://linkedin.com/in/tyrell-mifflin-ceh-csm-85a27583">LinkedIn</a>
+</div>
+""", unsafe_allow_html=True)
