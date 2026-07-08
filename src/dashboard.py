@@ -52,7 +52,7 @@ required_columns = [
 st.title("🔐 AI IAM/GRC Assistant")
 st.subheader("Identity Governance Risk Assessment & AI Adoption Risk Advisory")
 
-tab_iam, tab_ai = st.tabs(["🪪 IAM Risk Assessment", "🤖 AI Adoption Risk Advisor"])
+tab_iam, tab_ai, tab_gov, tab_aigov = st.tabs(["🪪 IAM Risk Assessment", "🤖 AI Adoption Risk Advisor", "🏛️ Risk Governance", "🧠 AI Governance"])
 
 with tab_iam:
     st.write(
@@ -259,3 +259,194 @@ with tab_ai:
                 file_name="ai_risk_assessment.md",
                 mime="text/markdown"
             )
+
+
+with tab_gov:
+    st.write(
+        "Second-line risk governance views — the Three Lines of Defense model "
+        "and the enterprise Risk Appetite dashboard used for ongoing assessment "
+        "and recalibration of risk posture."
+    )
+
+    st.markdown("---")
+    st.subheader("🏛️ Three Lines of Defense")
+    st.markdown(
+        "Risk management responsibility distributed across three organizational "
+        "lines, each with distinct ownership and accountability:"
+    )
+
+    lod1, lod2, lod3 = st.columns(3)
+
+    with lod1:
+        st.markdown("### 1️⃣ First Line")
+        st.markdown("**Own & Manage Risk**")
+        st.markdown("""
+        Business units and technology teams that own risks and controls in
+        their day-to-day operations.
+
+        **Functions:**
+        - Business unit management
+        - IT operations & engineering
+        - Application owners
+        - Control execution & self-testing
+
+        **In this platform:**
+        - Runs IAM access reviews
+        - Remediates flagged accounts
+        - Executes control activities
+        """)
+
+    with lod2:
+        st.markdown("### 2️⃣ Second Line")
+        st.markdown("**Oversee & Challenge**")
+        st.markdown("""
+        Independent risk and compliance functions that set frameworks,
+        monitor risk posture, and challenge the first line.
+
+        **Functions:**
+        - Enterprise risk management
+        - Information security risk oversight
+        - Compliance & policy governance
+        - Risk appetite monitoring
+
+        **In this platform:**
+        - Risk taxonomy classification
+        - AI adoption risk advisory
+        - Framework mapping & appetite tracking
+        """)
+
+    with lod3:
+        st.markdown("### 3️⃣ Third Line")
+        st.markdown("**Independent Assurance**")
+        st.markdown("""
+        Internal audit providing independent, objective assurance to the
+        board and audit committee.
+
+        **Functions:**
+        - Internal audit
+        - Independent control testing
+        - Board & audit committee reporting
+        - Assurance over 1st and 2nd lines
+
+        **In this platform:**
+        - Audit-ready report exports
+        - Evidence trails & finding detail
+        - Executive & board-level narratives
+        """)
+
+    st.markdown("---")
+    st.subheader("📊 Enterprise Risk Appetite Dashboard")
+    st.markdown(
+        "Current risk posture against board-approved appetite thresholds by "
+        "risk taxonomy. Supports ongoing assessment and recalibration of the "
+        "global risk appetite across business units."
+    )
+
+    appetite_data = {
+        "Risk Category": [
+            "Cyber Risk",
+            "Technology Risk",
+            "Data Risk",
+            "AI Risk",
+            "Third-Party / Vendor Risk",
+            "Operational Resilience"
+        ],
+        "Appetite Status": [
+            "🟢 Within Appetite",
+            "🟡 Near Threshold",
+            "🟢 Within Appetite",
+            "🔴 Above Appetite",
+            "🟢 Within Appetite",
+            "🟡 Near Threshold"
+        ],
+        "Current Exposure": ["Moderate", "Elevated", "Moderate", "High", "Moderate", "Elevated"],
+        "Trend": ["→ Stable", "↑ Increasing", "→ Stable", "↑ Increasing", "↓ Decreasing", "→ Stable"],
+        "Key Driver": [
+            "Access controls maturing; terminated-user remediation on track",
+            "Dormant account volume approaching tolerance threshold",
+            "Data classification program operating effectively",
+            "Ungoverned AI adoption ahead of control framework maturity",
+            "Vendor review cycle current; contractor access controls improving",
+            "CloudTrail regional gap under remediation"
+        ]
+    }
+    df_appetite = pd.DataFrame(appetite_data)
+    st.dataframe(df_appetite, use_container_width=True, hide_index=True)
+
+    acol1, acol2, acol3 = st.columns(3)
+    acol1.metric("Within Appetite", "3", delta="categories")
+    acol2.metric("Near Threshold", "2", delta="monitor closely", delta_color="off")
+    acol3.metric("Above Appetite", "1", delta="action required", delta_color="inverse")
+
+    st.markdown("#### Recalibration Notes")
+    st.markdown("""
+    - **AI Risk** exceeds current appetite — driven by business-unit AI adoption
+      outpacing governance controls. Recommended action: mandatory AI adoption
+      risk assessments (see AI Adoption Risk Advisor tab) before deployment
+      approval, and establishment of an AI governance registry.
+    - **Technology Risk** approaching threshold — dormant account population
+      requires automated lifecycle controls to prevent breach of tolerance.
+    - Appetite statements reviewed quarterly with the Risk Committee; thresholds
+      recalibrated annually or upon material change in business profile.
+    """)
+
+with tab_aigov:
+    st.write(
+        "AI Governance registry — inventory of AI models and use cases in the "
+        "organization with ownership, risk ratings, and required control gates. "
+        "Supports responsible AI adoption oversight across business units."
+    )
+
+    st.markdown("---")
+    st.subheader("🧠 AI Model & Use Case Registry")
+
+    aigov_data = {
+        "Model / Use Case": [
+            "Customer Service Chatbot",
+            "Transaction Fraud Scoring",
+            "Document Summarization (Legal)",
+            "IAM Risk Analysis Engine",
+            "Marketing Content Generator",
+            "Credit Decision Support"
+        ],
+        "Business Owner": [
+            "Retail Banking Ops",
+            "Fraud Operations",
+            "Legal Department",
+            "Information Security",
+            "Marketing",
+            "Credit Risk"
+        ],
+        "Risk Rating": ["High", "High", "Medium", "Medium", "Low", "Critical"],
+        "Human Review Required": ["Yes", "Yes", "Yes", "Yes", "No", "Yes — Mandatory"],
+        "Bias Assessment": ["✅ Complete", "✅ Complete", "🔄 In Progress", "✅ Complete", "➖ N/A", "🔄 In Progress"],
+        "Privacy Review": ["✅ Complete", "✅ Complete", "✅ Complete", "✅ Complete", "✅ Complete", "🔄 In Progress"],
+        "Status": ["🟢 Approved", "🟢 Approved", "🟡 Conditional", "🟢 Approved", "🟢 Approved", "🔴 Pending Review"]
+    }
+    df_aigov = pd.DataFrame(aigov_data)
+    st.dataframe(df_aigov, use_container_width=True, hide_index=True)
+
+    gcol1, gcol2, gcol3, gcol4 = st.columns(4)
+    gcol1.metric("Registered Models", "6")
+    gcol2.metric("Approved", "4")
+    gcol3.metric("Conditional", "1")
+    gcol4.metric("Pending Review", "1")
+
+    st.markdown("---")
+    st.subheader("AI Governance Control Gates")
+    st.markdown("""
+    Every AI adoption must clear the following gates before production approval:
+
+    | Gate | Owner | Requirement |
+    |---|---|---|
+    | Use Case Risk Assessment | Second Line (this platform — AI Risk Advisor tab) | Structured risk assessment across all taxonomies |
+    | Data Privacy Review | Privacy Office | PII/PHI handling, retention, and residency validated |
+    | Bias & Fairness Assessment | Model Owner + Second Line | Demographic performance parity documented |
+    | Human-in-the-Loop Design | Business Owner | Human review requirements defined for consequential decisions |
+    | Vendor & Subprocessor Review | Third-Party Risk | Training-data prohibitions and audit rights contracted |
+    | Ongoing Monitoring Plan | First Line | Model drift, output quality, and incident escalation defined |
+
+    **Framework alignment:** NIST AI Risk Management Framework (AI RMF) ·
+    DORA Art. 28 (third-party AI services) · GDPR Art. 22 (automated
+    decision-making) · Model Risk Management guidance (SR 11-7 principles)
+    """)
