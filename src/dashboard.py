@@ -37,6 +37,8 @@ from pdf_generator import markdown_to_pdf
 from framework_mapper import generate_control_mapping_table
 from risk_taxonomy import add_taxonomy_columns, taxonomy_summary
 from ai_risk_advisor import generate_ai_risk_assessment
+from vendor_doc_assessment import extract_text_from_pdf, generate_structured_assessment
+from report_generator import build_report
 
 required_columns = [
     "user_id",
@@ -98,7 +100,7 @@ with _hcol2:
     st.markdown("**Identity Governance Risk Assessment & AI Adoption Risk Advisory**")
     st.caption("MiffTech Risk AI & Consulting · Second-Line Risk Intelligence Platform")
 
-tab_iam, tab_ai, tab_gov, tab_aigov, tab_intake = st.tabs(["🪪 IAM Risk Assessment", "🤖 AI Adoption Risk Advisor", "🏛️ Risk Governance", "🧠 AI Governance", "📥 Risk Intake & Workflow"])
+tab_iam, tab_ai, tab_gov, tab_aigov, tab_intake, tab_docs = st.tabs(["🪪 IAM Risk Assessment", "🤖 AI Adoption Risk Advisor", "🏛️ Risk Governance", "🧠 AI Governance", "📥 Risk Intake & Workflow", "📄 Vendor Document Assessment"])
 
 with tab_iam:
     st.write(
@@ -782,3 +784,133 @@ evidence is retained in the task assignment log above.
         all at once.
         """)
 
+
+
+with tab_docs:
+    st.write(
+        "Upload vendor or technology documentation — SOC reports, penetration "
+        "test results, security architecture diagrams, SBOMs, incident response "
+        "plans, encryption standards — and receive a second-line risk assessment "
+        "grounded in what the documents actually contain, with explicit callouts "
+        "of what evidence is missing."
+    )
+
+    st.markdown("---")
+
+    dcol1, dcol2 = st.columns(2)
+    with dcol1:
+        vendor_name = st.text_input("Vendor / Technology Name", placeholder="e.g., ClearPath Platform")
+    with dcol2:
+        vendor_business_unit = st.text_input("Requesting Business Unit", placeholder="e.g., IT Operations")
+
+    uploaded_docs = st.file_uploader(
+        "Upload vendor documents (PDF)",
+        type=["pdf"],
+        accept_multiple_files=True
+    )
+
+    if uploaded_docs:
+        st.markdown(f"**{len(uploaded_docs)} document(s) uploaded:**")
+        for doc in uploaded_docs:
+            st.markdown(f"- {doc.name}")
+
+        if st.button("Generate Vendor Risk Assessment"):
+            if not vendor_name.strip():
+                st.warning("Please provide a vendor or technology name before generating the assessment.")
+            else:
+                with st.spinner(f"Extracting text from {len(uploaded_docs)} document(s)..."):
+                    documents = {}
+                    for doc in uploaded_docs:
+                        file_bytes = doc.read()
+                        extracted = extract_text_from_pdf(file_bytes, doc.name)
+                        documents[doc.name] = extracted
+
+                with st.expander("📄 Extracted Document Preview (first 300 characters per file)"):
+                    for name, text in documents.items():
+                        st.markdown(f"**{name}**")
+                        st.text(text[:300] + ("..." if len(text) > 300 else ""))
+                        st.markdown("---")
+
+                with st.spinner("Performing second-line cross-document risk assessment..."):
+                    try:
+                        assessment = generate_structured_assessment(
+                            vendor_name=vendor_name,
+                            business_unit=vendor_business_unit if vendor_business_unit.strip() else "Not specified",
+                            documents=documents
+                        )
+                    except ValueError as e:
+                        st.error(f"Assessment generation failed: {e}")
+                        assessment = None
+
+                if assessment:
+                    st.subheader(assessment.get("title", vendor_name))
+                    st.caption(assessment.get("subtitle", ""))
+
+                    st.markdown("### Executive Summary")
+                    for para in assessment.get("exec_summary", "").split("\n\n"):
+                        if para.strip():
+                            st.write(para.strip())
+
+                    if assessment.get("bottom_line"):
+                        st.info(f"**Bottom line:** {assessment['bottom_line']}")
+
+                    findings = assessment.get("findings", [])
+                    if findings:
+                        st.markdown("### Findings at a Glance")
+                        glance_rows = [
+                            {"ID": f.get("id", ""), "Finding": f.get("title", ""), "Severity": f.get("severity", "")}
+                            for f in findings
+                        ]
+                        st.dataframe(pd.DataFrame(glance_rows), use_container_width=True, hide_index=True)
+
+                        st.markdown("### Detailed Findings")
+                        for f in findings:
+                            sev = f.get("severity", "Medium")
+                            sev_icon = {"Critical": "🔴", "High": "🟠", "Medium": "🟡", "Low": "🟢"}.get(sev, "⚪")
+                            with st.expander(f"{sev_icon} {f.get('id', '')} — {f.get('title', '')} — {sev}"):
+                                if f.get("observation"):
+                                    st.markdown(f"**Observation:** {f['observation']}")
+                                if f.get("assessment"):
+                                    st.markdown(f"**Assessment:** {f['assessment']}")
+                                if f.get("traceability"):
+                                    st.markdown("**Traceability:**")
+                                    for t in f["traceability"]:
+                                        st.markdown(f"- {t}")
+                                if f.get("position"):
+                                    st.warning(f"**Position:** {f['position']}")
+
+                    if assessment.get("root_cause"):
+                        st.markdown("### Root Cause")
+                        for para in assessment["root_cause"].split("\n\n"):
+                            if para.strip():
+                                st.write(para.strip())
+
+                    st.success("Cross-document risk assessment complete.")
+
+                    docx_bytes = build_report(
+                        title=assessment.get("title", vendor_name),
+                        subtitle=assessment.get("subtitle", "Cross-Document Findings, Root Cause, and Remediation Plan"),
+                        prepared_by="Tyrell Mifflin — MiffTech Risk AI & Consulting",
+                        exec_summary=assessment.get("exec_summary", ""),
+                        findings=findings,
+                        root_cause=assessment.get("root_cause", ""),
+                        bottom_line=assessment.get("bottom_line"),
+                    )
+
+                    st.download_button(
+                        "📄 Download Full Report (Word)",
+                        data=docx_bytes,
+                        file_name=f"{vendor_name.replace(' ', '_')}_Risk_Assessment.docx",
+                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+
+                    import json as _json
+                    st.download_button(
+                        "Download Raw Findings (JSON)",
+                        data=_json.dumps(assessment, indent=2),
+                        file_name="vendor_assessment_data.json",
+                        mime="application/json"
+                    )
+
+    else:
+        st.info("Upload one or more vendor documents above to begin the assessment.")
