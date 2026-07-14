@@ -5,3 +5,7 @@ __pycache__/
 *.backup
 add_risk_intake.py
 add_assessment_depth.py
+add_vendor_docs.py
+add_docx_export.py
+add_structured_report.py
+*.backup
