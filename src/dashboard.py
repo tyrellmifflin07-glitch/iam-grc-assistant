@@ -506,7 +506,6 @@ st.markdown("""
     <strong>MiffTech Risk AI & Consulting</strong> · Tyrell Mifflin, CEH · CSM · CCSP (Expected 2026)<br>
     IAM Governance · GRC Engineering · AI Risk Advisory · New Castle, DE<br>
     <a href="https://iam-grc-assistant.streamlit.app">Live Platform</a> ·
-    <a href="https://github.com/tyrellmifflin07-glitch">GitHub</a> ·
     <a href="https://linkedin.com/in/tyrell-mifflin-ceh-csm-85a27583">LinkedIn</a>
 </div>
 """, unsafe_allow_html=True)
